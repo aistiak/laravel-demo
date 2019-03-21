@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>app</title>
+	<script type="text/javascript" src="js/util.js"></script>
+	<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+	<script type="text/javascript" src="js/util.js"></script>
+</head>
+<body>
+
+
+	<div id="main">
+        <h3>logged in as </h3>
+		<h4 id="app">
+			loading...
+		</h4>
+       
+		<button onclick="location.href='http://localhost/laravel/me/www/'">logout</button>
+	</div>
+<script type="text/javascript">
+	/*function logOut(){
+		var loc = window.location.pathname
+		window.location = loc+'/index.html'
+	}*/
+</script>
+
+</body>
+<style type="text/css">
+	#main{
+		position: relative;
+		margin-top: 200px;
+		left: 50%;
+
+	}
+</style>
+
+<script type="text/javascript">
+
+	var progress_bar = getLoading()
+	console.log(progress_bar)
+	$('body').append(getLoading())
+	var token = getCookie("myapptok");
+
+	var authorization = 'Bearer ' + token 
+	console.log(authorization)
+	var request = $.ajax({
+		url: 'http://localhost/laravel/me/api/public/api/details',
+		type: 'post',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',   
+			'Accept': 'application/json' ,
+			'Authorization' : authorization,
+		},
+		dataType: 'json',
+
+
+	});
+
+	request.success(function(data){
+		console.log(data)
+		console.log('data ' + data.success.id)
+
+		document.cookie = "myapptok="+data['success']['token']
+		$('#app').html('<br>'+data.success.name+'<br>'+data.success.email)
+		document.cookie = "myapptok="+token;
+
+	})
+
+	request.error(function(httpObj, textStatus) {       
+		if(httpObj.status==401){
+			console.log(textStatus)
+			console.log('not you')
+			$('#app').html('something went wrong')
+
+		}
+
+
+	});
+</script>
+</html>
